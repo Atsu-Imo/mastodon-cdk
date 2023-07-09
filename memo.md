@@ -50,4 +50,18 @@ DB、キャッシュに接続するクライアント側に設定するセキュ
 
 OACを利用してアクセスの制御を行う。  
 
+* cfnOriginAccessControl
+* cloudFrontDistribution
+* bucketPolicyStatement
+* cfnDistribution
 
+### cache 
+
+redis
+
+```
+      cacheNodeType: 'cache.t4g.micro',
+      numNodeGroups: 1,
+      replicasPerNodeGroup: 0,
+```
+あたりでかなり小さく設定している、雰囲気  

@@ -23,6 +23,7 @@ export class CdkStack extends cdk.Stack {
       notificationTopic.addSubscription(new cdk.aws_sns_subscriptions.UrlSubscription(defaultConfig.AlertingHttpsEndpoint));
     }
 
+    // TODO notificationTopic
     const kmsKey = new cdk.aws_kms.Key(this, 'database-key');
     const secretManager = new cdk.aws_secretsmanager.Secret(this, 'kms-secret', {
       encryptionKey: kmsKey,
@@ -35,6 +36,7 @@ export class CdkStack extends cdk.Stack {
     const hostedZone = new cdk.aws_route53.PublicHostedZone(this, 'hostedzone', {
       zoneName: defaultConfig.DomainName,
     });
+    // TODO notificationTopic
     const vpc = new cdk.aws_ec2.Vpc(this, 'default-vpc', {
       maxAzs: 2,
       natGateways: 0,
@@ -96,7 +98,20 @@ export class CdkStack extends cdk.Stack {
       destinationBucket: s3bucket,
       distribution: cloudFrontDistribution,
       distributionPaths: ['/*']
-    })
+    });
+
+    // cacheDB
+    // TODO notificationTopic
+    const cache = new cdk.aws_elasticache.CfnReplicationGroup(this, 'redis-cluster', {
+      replicationGroupDescription: 'redis-replication-group',
+      securityGroupIds: [clientSg.securityGroupId],
+      kmsKeyId: kmsKey.keyId,
+      snapshotRetentionLimit: 35,
+      transitEncryptionEnabled: false,
+      cacheNodeType: 'cache.t4g.micro',
+      numNodeGroups: 1,
+      replicasPerNodeGroup: 0,
+    });
 
     // example resource
     // const queue = new sqs.Queue(this, 'CdkQueue', {
